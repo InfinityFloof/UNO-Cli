@@ -22,8 +22,8 @@ type card struct {
 }
 
 type handCard struct {
-	color       string
-	name        string
+	color string
+	name  string
 }
 
 // This is a struct that individual player data
@@ -82,6 +82,16 @@ var deckSchematic = []card{
 // Copies the deckSchematic to deck so we can vary the contents during the progress of the game
 var deck = deckSchematic
 
+// Global variables
+var (
+	playerTurn int = 0
+
+	// 0 = Left, 1 = Right
+	gameDirection bool = true
+
+	currentCard handCard
+)
+
 // Get total cards
 func getCardTotal() int {
 	a := 0
@@ -101,30 +111,30 @@ func randomInt(a int) int {
 // Draw a card
 func drawCard(a string) {
 	for true {
-		var b int = randomInt(len(deckSchematic)-1)
+		var b int = randomInt(len(deckSchematic) - 1)
 
 		// Checks that we dont have a full hand
 		switch a {
 		case "player":
-			if player.amountInHand==30 {
+			if player.amountInHand == 30 {
 				break
 			}
 		case "computer1":
-			if computer1.amountInHand==30 {
+			if computer1.amountInHand == 30 {
 				break
 			}
 		case "computer2":
-			if computer2.amountInHand==30 {
+			if computer2.amountInHand == 30 {
 				break
 			}
 		case "computer3":
-			if computer3.amountInHand==30 {
+			if computer3.amountInHand == 30 {
 				break
 			}
 		}
 
 		// Checks that we have the card in the deck
-		if deck[b].amountCards!=0 {
+		if deck[b].amountCards != 0 {
 
 			// Selects player and gives them the card
 			switch a {
@@ -150,13 +160,263 @@ func drawCard(a string) {
 	}
 }
 
+// Initialize with a card
+func initCard() {
+	for true {
+		var b int = randomInt(len(deckSchematic) - 1)
+
+		// Checks that we have the card in the deck
+		if deck[b].amountCards != 0 && deck[b].color != "Black" {
+			currentCard = handCard{deck[b].color, deck[b].name}
+			deck[b].amountCards--
+			break
+		}
+	}
+}
+
+// Checks if a card is playable
+func checkPossibility(cardColor, cardName string) bool {
+	if cardColor == "Black" {
+		return true
+	} else {
+		if cardColor == currentCard.color {
+			return true
+		} else {
+			if cardName == currentCard.name {
+				return true
+			} else {
+				return false
+			}
+		}
+	}
+}
+
+// Compares two cards and returns a boolean lazily
+func compareLazyCards(card1, card2 handCard) bool {
+	if card1.name == card2.name || card1.color == card2.color {
+		return true
+	} else {
+		return false
+	}
+}
+
+// Compares two cards and returns a boolean strictly
+func compareStrictCards(card1, card2 handCard) bool {
+	if card1.name == card2.name && card1.color == card2.color {
+		return true
+	} else {
+		return false
+	}
+}
+
+// Check if card is owned by player
+func ifCardInPlayer(cardToCheck handCard, playerName string) bool {
+	switch playerName {
+	case "player":
+		for x := 0; x < cap(player.cardsInHand); x++ {
+			if cardToCheck == player.cardsInHand[x] {
+				return true
+			}
+		}
+		return false
+	case "computer1":
+		for x := 0; x < cap(computer1.cardsInHand); x++ {
+			if cardToCheck == computer1.cardsInHand[x] {
+				return true
+			}
+		}
+		return false
+	case "computer2":
+		for x := 0; x < cap(computer2.cardsInHand); x++ {
+			if cardToCheck == computer2.cardsInHand[x] {
+				return true
+			}
+		}
+		return false
+	case "computer3":
+		for x := 0; x < cap(computer3.cardsInHand); x++ {
+			if cardToCheck == computer3.cardsInHand[x] {
+				return true
+			}
+		}
+		return false
+	}
+	return false
+}
+
+// Places a card and reallocates other cards
+func placeCard(selectedCard handCard, playerName string) {
+	switch playerName {
+	case "player":
+		for x := 0; x < cap(player.cardsInHand); x++ {
+			if selectedCard == player.cardsInHand[x] {
+				cardNum := x
+				for i := cardNum + 1; cardNum < player.amountInHand; i++ {
+					if i <= 29 {
+						player.cardsInHand[i-1] = player.cardsInHand[i]
+						player.cardsInHand[player.amountInHand] = handCard{"", ""}
+					} else {
+						break
+					}
+				}
+				player.amountInHand = player.amountInHand - 1
+				break
+			}
+		}
+	case "computer1":
+		for x := 0; x < cap(computer1.cardsInHand); x++ {
+			if selectedCard == computer1.cardsInHand[x] {
+				cardNum := x
+				for i := cardNum + 1; cardNum < computer1.amountInHand; i++ {
+					if i <= 29 {
+						computer1.cardsInHand[i-1] = computer1.cardsInHand[i]
+						computer1.cardsInHand[computer1.amountInHand] = handCard{"", ""}
+					} else {
+						break
+					}
+				}
+				computer1.amountInHand = computer1.amountInHand - 1
+				break
+			}
+		}
+	case "computer2":
+		for x := 0; x < cap(computer2.cardsInHand); x++ {
+			if selectedCard == computer2.cardsInHand[x] {
+				cardNum := x
+				for i := cardNum + 1; cardNum < computer2.amountInHand; i++ {
+					if i <= 29 {
+						computer2.cardsInHand[i-1] = computer2.cardsInHand[i]
+						computer2.cardsInHand[computer2.amountInHand] = handCard{"", ""}
+					} else {
+						break
+					}
+				}
+				computer2.amountInHand = computer2.amountInHand - 1
+				break
+			}
+		}
+	case "computer3":
+		for x := 0; x < cap(computer3.cardsInHand); x++ {
+			if selectedCard == computer3.cardsInHand[x] {
+				cardNum := x
+				for i := cardNum + 1; cardNum < computer3.amountInHand; i++ {
+					if i <= 29 {
+						computer3.cardsInHand[i-1] = computer3.cardsInHand[i]
+						computer3.cardsInHand[computer3.amountInHand] = handCard{"", ""}
+					} else {
+						break
+					}
+				}
+				computer3.amountInHand = computer3.amountInHand - 1
+				break
+			}
+		}
+	}
+	currentCard = selectedCard
+}
+
+// Changes the turn
+func turnChange() {
+	if gameDirection == false {
+		switch playerTurn {
+		case 0:
+			playerTurn = 1
+		case 1:
+			playerTurn = 2
+		case 2:
+			playerTurn = 3
+		case 3:
+			playerTurn = 0
+		}
+	} else {
+		switch playerTurn {
+		case 0:
+			playerTurn = 3
+		case 1:
+			playerTurn = 0
+		case 2:
+			playerTurn = 1
+		case 3:
+			playerTurn = 2
+		}
+	}
+}
+
 func main() {
 	// Hands everyone 7 cards
-	for i := 0; i <= 7; i++{
+	for i := 0; i < 7; i++ {
 		drawCard("player")
 		drawCard("computer1")
 		drawCard("computer2")
 		drawCard("computer3")
-	}	
-	fmt.Println(player.cardsInHand)
+	}
+	// Plays out a card in the middle
+	initCard()
+
+	for true {
+
+		// Show General information about the game
+		fmt.Printf("Com1 has %v cards\n", computer1.amountInHand)
+		fmt.Printf("Com2 has %v cards\n", computer1.amountInHand)
+		fmt.Printf("Com3 has %v cards\n", computer1.amountInHand)
+		fmt.Printf("The current card played is a %v %v\n", currentCard.color, currentCard.name)
+		if gameDirection == true {
+			fmt.Printf("The game rotation is: You > Com1 > Com2 > Com3\n")
+		} else {
+			fmt.Printf("The game rotation is: You < Com1 < Com2 < Com3\n")
+		}
+
+		fmt.Printf("\nYou have the cards:\n\n")
+		for i := 0; i <= player.amountInHand-1; i++ {
+			fmt.Printf("%v %v\n", player.cardsInHand[i].color, player.cardsInHand[i].name)
+		}
+		// Do stuff
+		switch playerTurn {
+		case 0:
+			for true {
+
+				// Give Information to Player
+				fmt.Printf("\nWhat do you want to play? Write Draw to draw a card. ")
+				if player.amountInHand == 2 {
+					fmt.Printf("Write UNO to call UNO")
+				}
+				userFirstArgument := ""
+				userSecondArgument := ""
+
+				// Reads information
+				fmt.Printf("\n> ")
+				fmt.Scanln(&userFirstArgument, &userSecondArgument)
+
+				// Checks for player action
+				switch userFirstArgument {
+
+				// Draws a card
+				case "Draw":
+					drawCard("player")
+					break
+
+				// UNO
+				case "UNO":
+
+				// Places card
+				default:
+					if (checkPossibility(userFirstArgument, userSecondArgument) && compareLazyCards(handCard{userFirstArgument, userSecondArgument}, currentCard) && ifCardInPlayer(handCard{userFirstArgument, userSecondArgument}, "player")) {
+						placeCard(handCard{userFirstArgument, userSecondArgument}, "player")
+						fmt.Printf("Card was placed!\n\n")
+						turnChange()
+					} else {
+						fmt.Printf("Sorry, that card cannot be placed.\n\n")
+					}
+				}
+
+				// Checks if it's still your turn
+				if playerTurn != 0 {
+					break
+				}
+			}
+		}
+
+		// Debug
+		playerTurn = 0
+	}
 }
