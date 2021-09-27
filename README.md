@@ -1,4 +1,4 @@
-# UNO-Go
+# UNO-Cli
 ## What is it?
 UNO-Go is a work in progress UNO clone written in Go designed to run in a CLI enviroment
 
