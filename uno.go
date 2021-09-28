@@ -447,64 +447,67 @@ func main() {
 				// Places card
 				default:
 					if checkPossibility(userFirstArgument, userSecondArgument) && ifCardInPlayer(handCard{userFirstArgument, userSecondArgument}, "player") {
-						placeCard(handCard{userFirstArgument, userSecondArgument}, "player")
-						fmt.Printf("Card was placed!\n\n")
+						if (player.isUNO == false && player.amountInHand >= 2) || (player.isUNO == true && player.amountInHand == 1) {
+							placeCard(handCard{userFirstArgument, userSecondArgument}, "player")
+							fmt.Printf("Card was placed!\n\n")
 
-						// Special card
-						switch userSecondArgument {
-						case "Plus2":
-							if gameDirection == true {
-								for i := 0; i < 2; i++ {
-									drawCard("computer1")
+							// Special card
+							switch userSecondArgument {
+							case "Plus2":
+								if gameDirection == true {
+									for i := 0; i < 2; i++ {
+										drawCard("computer1")
+									}
+								} else {
+									for i := 0; i < 2; i++ {
+										drawCard("computer3")
+									}
 								}
-							} else {
-								for i := 0; i < 2; i++ {
-									drawCard("computer3")
+								turnChange()
+							case "Plus4":
+								wildcardResponse := ""
+								fmt.Printf("Choose a new color\n> ")
+								fmt.Scanf("%s", wildcardResponse)
+								if wildcardResponse == "Blue" || wildcardResponse == "Red" || wildcardResponse == "Yellow" || wildcardResponse == "Green" {
+									currentCard = handCard{wildcardResponse, currentCard.name}
+								} else {
+									currentCard = handCard{"Red", currentCard.name}
 								}
-							}
-							turnChange()
-						case "Plus4":
-							wildcardResponse := ""
-							fmt.Printf("Choose a new color\n> ")
-							fmt.Scanf("%s", wildcardResponse)
-							if wildcardResponse == "Blue" || wildcardResponse == "Red" || wildcardResponse == "Yellow" || wildcardResponse == "Green" {
-								currentCard = handCard{wildcardResponse, currentCard.name}
-							} else {
-								currentCard = handCard{"Red", currentCard.name}
-							}
-							if gameDirection == true {
-								for i := 0; i < 4; i++ {
-									drawCard("computer1")
+								if gameDirection == true {
+									for i := 0; i < 4; i++ {
+										drawCard("computer1")
+									}
+								} else {
+									for i := 0; i < 4; i++ {
+										drawCard("computer3")
+									}
 								}
-							} else {
-								for i := 0; i < 4; i++ {
-									drawCard("computer3")
+							case "Block":
+								turnChange()
+								turnChange()
+							case "Wildcard":
+								wildcardResponse := ""
+								fmt.Printf("Choose a new color\n> ")
+								fmt.Scanf("%s", wildcardResponse)
+								if wildcardResponse == "Blue" || wildcardResponse == "Red" || wildcardResponse == "Yellow" || wildcardResponse == "Green" {
+									currentCard = handCard{wildcardResponse, currentCard.name}
+								} else {
+									currentCard = handCard{"Red", currentCard.name}
 								}
+							case "Reverse":
+								if gameDirection == true {
+									gameDirection = false
+								} else {
+									gameDirection = true
+								}
+							default:
+								player.isUNO = false
+								turnChange()
 							}
-						case "Block":
-							turnChange()
-							turnChange()
-						case "Wildcard":
-							wildcardResponse := ""
-							fmt.Printf("Choose a new color\n> ")
-							fmt.Scanf("%s", wildcardResponse)
-							if wildcardResponse == "Blue" || wildcardResponse == "Red" || wildcardResponse == "Yellow" || wildcardResponse == "Green" {
-								currentCard = handCard{wildcardResponse, currentCard.name}
-							} else {
-								currentCard = handCard{"Red", currentCard.name}
-							}
-						case "Reverse":
-							if gameDirection == true {
-								gameDirection = false
-							} else {
-								gameDirection = true
-							}
-						default:
-							turnChange()
+
+						} else {
+							fmt.Printf("Sorry, that card cannot be placed.\n\n")
 						}
-
-					} else {
-						fmt.Printf("Sorry, that card cannot be placed.\n\n")
 					}
 				}
 
@@ -546,12 +549,103 @@ func main() {
 				turnChange()
 			} else {
 				if canCallUNO == true && randomInt(2) == 2 {
+					fmt.Printf("\nCom1 is calling UNO!\n")
+					if computer1.amountInHand <= 2 {
+						computer1.isUNO = true
+					} else {
+						if player.isUNO == false && player.amountInHand == 1 {
+							fmt.Printf("Player hasn't called UNO! They have to draw 2 cards.\n")
+							for i := 0; i < 2; i++ {
+								drawCard("player")
+							}
+						} else if computer2.isUNO == false && computer2.amountInHand == 1 {
+							fmt.Printf("Com2 hasn't called UNO! They have to draw 2 cards.\n")
+							for i := 0; i < 2; i++ {
+								drawCard("computer2")
+							}
+						} else if computer3.isUNO == false && computer3.amountInHand == 1 {
+							fmt.Printf("Com3 hasn't called UNO! They have to draw 2 cards.\n")
+							for i := 0; i < 2; i++ {
+								drawCard("computer3")
+							}
+						}
+					}
 
 				} else {
-
+					userArgument := possibleCards[(randomInt(possibleCardAmount - 1))]
+					userFirstArgument := userArgument.color
+					userSecondArgument := userArgument.name
+					placeCard(handCard{userFirstArgument, userSecondArgument}, "computer1")
+					switch userSecondArgument {
+					case "Plus2":
+						if gameDirection == true {
+							for i := 0; i < 2; i++ {
+								drawCard("computer2")
+							}
+						} else {
+							for i := 0; i < 2; i++ {
+								drawCard("player")
+							}
+						}
+						turnChange()
+					case "Plus4":
+						wildcardResponse := ""
+						switch randomInt(3) {
+						case 0:
+							wildcardResponse = "Blue"
+						case 1:
+							wildcardResponse = "Red"
+						case 2:
+							wildcardResponse = "Yellow"
+						case 3:
+							wildcardResponse = "Green"
+						}
+						if wildcardResponse == "Blue" || wildcardResponse == "Red" || wildcardResponse == "Yellow" || wildcardResponse == "Green" {
+							currentCard = handCard{wildcardResponse, currentCard.name}
+						} else {
+							currentCard = handCard{"Red", currentCard.name}
+						}
+						if gameDirection == true {
+							for i := 0; i < 4; i++ {
+								drawCard("computer2")
+							}
+						} else {
+							for i := 0; i < 4; i++ {
+								drawCard("player")
+							}
+						}
+					case "Block":
+						turnChange()
+						turnChange()
+					case "Wildcard":
+						wildcardResponse := ""
+						switch randomInt(3) {
+						case 0:
+							wildcardResponse = "Blue"
+						case 1:
+							wildcardResponse = "Red"
+						case 2:
+							wildcardResponse = "Yellow"
+						case 3:
+							wildcardResponse = "Green"
+						}
+						if wildcardResponse == "Blue" || wildcardResponse == "Red" || wildcardResponse == "Yellow" || wildcardResponse == "Green" {
+							currentCard = handCard{wildcardResponse, currentCard.name}
+						} else {
+							currentCard = handCard{"Red", currentCard.name}
+						}
+					case "Reverse":
+						if gameDirection == true {
+							gameDirection = false
+						} else {
+							gameDirection = true
+						}
+					default:
+						computer1.isUNO = false
+						turnChange()
+					}
 				}
 			}
-
 		}
 	}
 }
