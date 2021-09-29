@@ -92,6 +92,8 @@ var (
 	gameDirection bool = true
 
 	currentCard handCard
+
+	maxThinkTime int = 5
 )
 
 // Get total cards
@@ -356,44 +358,44 @@ func main() {
 	initCard()
 
 	for true {
-
-		// Show General information about the game
-		fmt.Printf("Com1 has %v cards. ", computer1.amountInHand)
-		if computer1.isUNO == true {
-			fmt.Printf("Com1 has called UNO.")
-		}
-		fmt.Printf("\n")
-		fmt.Printf("Com2 has %v cards", computer1.amountInHand)
-		if computer2.isUNO == true {
-			fmt.Printf("Com2 has called UNO.")
-		}
-		fmt.Printf("\n")
-		fmt.Printf("Com3 has %v cards\n", computer1.amountInHand)
-		if computer3.isUNO == true {
-			fmt.Printf("Com3 has called UNO.")
-		}
-		fmt.Printf("\n")
-		if player.isUNO == true {
-			fmt.Printf("You have called UNO.")
-		}
-		fmt.Printf("\n")
-		fmt.Printf("The current card played is a %v %v\n", currentCard.color, currentCard.name)
-		if gameDirection == true {
-			fmt.Printf("The game rotation is: You > Com1 > Com2 > Com3\n")
-		} else {
-			fmt.Printf("The game rotation is: You < Com1 < Com2 < Com3\n")
-		}
-
-		fmt.Printf("\nYou have the cards:\n\n")
-		for i := 0; i <= player.amountInHand-1; i++ {
-			fmt.Printf("%v %v\n", player.cardsInHand[i].color, player.cardsInHand[i].name)
-		}
 		// Do stuff
 		switch playerTurn {
 
 		// Players turn
 		case 0:
 			player.isUNO = false
+
+			// Show General information about the game
+			fmt.Printf("Com1 has %v cards. ", computer1.amountInHand)
+			if computer1.isUNO == true {
+				fmt.Printf("Com1 has called UNO.")
+			}
+			fmt.Printf("\n")
+			fmt.Printf("Com2 has %v cards", computer1.amountInHand)
+			if computer2.isUNO == true {
+				fmt.Printf("Com2 has called UNO.")
+			}
+			fmt.Printf("\n")
+			fmt.Printf("Com3 has %v cards\n", computer1.amountInHand)
+			if computer3.isUNO == true {
+				fmt.Printf("Com3 has called UNO.")
+			}
+			fmt.Printf("\n")
+			if player.isUNO == true {
+				fmt.Printf("You have called UNO.")
+			}
+			fmt.Printf("\n")
+			fmt.Printf("The current card played is a %v %v\n", currentCard.color, currentCard.name)
+			if gameDirection == true {
+				fmt.Printf("The game rotation is: You > Com1 > Com2 > Com3\n")
+			} else {
+				fmt.Printf("The game rotation is: You < Com1 < Com2 < Com3\n")
+			}
+
+			fmt.Printf("\nYou have the cards:\n\n")
+			for i := 0; i <= player.amountInHand-1; i++ {
+				fmt.Printf("%v %v\n", player.cardsInHand[i].color, player.cardsInHand[i].name)
+			}
 			for true {
 
 				// Give Information to Player
@@ -464,6 +466,7 @@ func main() {
 									}
 								}
 								turnChange()
+								break
 							case "Plus4":
 								wildcardResponse := ""
 								fmt.Printf("Choose a new color\n> ")
@@ -482,9 +485,12 @@ func main() {
 										drawCard("computer3")
 									}
 								}
+								turnChange()
+								break
 							case "Block":
 								turnChange()
 								turnChange()
+								break
 							case "Wildcard":
 								wildcardResponse := ""
 								fmt.Printf("Choose a new color\n> ")
@@ -494,32 +500,34 @@ func main() {
 								} else {
 									currentCard = handCard{"Red", currentCard.name}
 								}
+								break
 							case "Reverse":
 								if gameDirection == true {
 									gameDirection = false
 								} else {
 									gameDirection = true
 								}
+								break
 							default:
 								player.isUNO = false
 								turnChange()
+								break
 							}
 
-						} else {
-							fmt.Printf("Sorry, that card cannot be placed.\n\n")
 						}
+					} else {
+						fmt.Printf("\nSorry, that card cannot be placed.\n")
 					}
 				}
-
-				// Checks if it's still your turn
 				if playerTurn != 0 {
 					break
 				}
+
 			}
 
 		// Com1s turn
 		case 1:
-			time.Sleep(time.Duration(randomInt(5)) * time.Second)
+			time.Sleep(time.Duration(randomInt(maxThinkTime)) * time.Second)
 			possibleCardAmount := 0
 			var possibleCards [30]handCard
 			canCallUNO := false
@@ -545,6 +553,7 @@ func main() {
 
 			// Does a move
 			if possibleCardAmount == 0 {
+				fmt.Printf("\nCom1 draws a card!\n")
 				drawCard("computer1")
 				turnChange()
 			} else {
@@ -576,6 +585,7 @@ func main() {
 					userFirstArgument := userArgument.color
 					userSecondArgument := userArgument.name
 					placeCard(handCard{userFirstArgument, userSecondArgument}, "computer1")
+					fmt.Printf("\nCom1 places a %v %v!\n", userFirstArgument, userSecondArgument)
 					switch userSecondArgument {
 					case "Plus2":
 						if gameDirection == true {
@@ -592,12 +602,16 @@ func main() {
 						wildcardResponse := ""
 						switch randomInt(3) {
 						case 0:
+							fmt.Printf("Com1 changes to Blue!\n")
 							wildcardResponse = "Blue"
 						case 1:
+							fmt.Printf("Com1 changes to Red!\n")
 							wildcardResponse = "Red"
 						case 2:
+							fmt.Printf("Com1 changes to Yellow!\n")
 							wildcardResponse = "Yellow"
 						case 3:
+							fmt.Printf("Com1 changes to Green!\n")
 							wildcardResponse = "Green"
 						}
 						if wildcardResponse == "Blue" || wildcardResponse == "Red" || wildcardResponse == "Yellow" || wildcardResponse == "Green" {
@@ -621,12 +635,16 @@ func main() {
 						wildcardResponse := ""
 						switch randomInt(3) {
 						case 0:
+							fmt.Printf("Com1 changes to Blue!\n")
 							wildcardResponse = "Blue"
 						case 1:
+							fmt.Printf("Com1 changes to Red!\n")
 							wildcardResponse = "Red"
 						case 2:
+							fmt.Printf("Com1 changes to Yellow!\n")
 							wildcardResponse = "Yellow"
 						case 3:
+							fmt.Printf("Com1 changes to Green!\n")
 							wildcardResponse = "Green"
 						}
 						if wildcardResponse == "Blue" || wildcardResponse == "Red" || wildcardResponse == "Yellow" || wildcardResponse == "Green" {
@@ -635,6 +653,7 @@ func main() {
 							currentCard = handCard{"Red", currentCard.name}
 						}
 					case "Reverse":
+						fmt.Printf("Com1 changes the direction!\n")
 						if gameDirection == true {
 							gameDirection = false
 						} else {
@@ -646,6 +665,7 @@ func main() {
 					}
 				}
 			}
+			break
 		}
 	}
 }
