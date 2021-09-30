@@ -1,8 +1,6 @@
 uno:
- go build uno.go
+	go build uno.go
 install:
- sudo mv uno /usr/bin/uno
+	sudo mv uno /usr/bin/uno
 uninstall:
- sudo rm /usr/bin/uno
-
-
+	sudo rm /usr/bin/uno
