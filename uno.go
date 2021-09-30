@@ -532,6 +532,7 @@ func main() {
 										break
 									}
 								}
+								currentCard = handCard{wildcardResponse, currentCard.name}
 								turnChange()
 								break
 							case "Reverse":
