@@ -262,6 +262,7 @@ func placeCard(selectedCard handCard, playerName string) {
 					}
 				}
 				currentCard = selectedCard
+				break
 			}
 		}
 		player.amountInHand = player.amountInHand - 1
@@ -278,6 +279,7 @@ func placeCard(selectedCard handCard, playerName string) {
 					}
 				}
 				currentCard = selectedCard
+				break
 			}
 		}
 		computer1.amountInHand = computer1.amountInHand - 1
@@ -294,6 +296,7 @@ func placeCard(selectedCard handCard, playerName string) {
 					}
 				}
 				currentCard = selectedCard
+				break
 			}
 		}
 		computer2.amountInHand = computer2.amountInHand - 1
@@ -310,6 +313,7 @@ func placeCard(selectedCard handCard, playerName string) {
 					}
 				}
 				currentCard = selectedCard
+				break
 			}
 		}
 		computer3.amountInHand = computer3.amountInHand - 1
@@ -343,6 +347,25 @@ func turnChange() {
 	}
 }
 
+func checkWin() bool {
+	switch 0 {
+	case player.amountInHand:
+		fmt.Println("\n\nYou win!")
+		return true
+	case computer1.amountInHand:
+		fmt.Println("\n\nCom1 win!")
+		return true
+	case computer2.amountInHand:
+		fmt.Println("\n\nCom2 win!")
+		return true
+	case computer3.amountInHand:
+		fmt.Println("\n\nCom3 win!")
+		return true
+	default:
+		return false
+	}
+}
+
 func main() {
 	// Hands everyone 7 cards
 	for i := 0; i < 7; i++ {
@@ -355,6 +378,12 @@ func main() {
 	initCard()
 
 	for true {
+		// Check for Win
+		winVar := checkWin()
+		if winVar == true {
+			break
+		}
+
 		// Do stuff
 		switch playerTurn {
 
@@ -413,6 +442,7 @@ func main() {
 				// Draws a card
 				case "Draw":
 					drawCard("player")
+					fmt.Printf("You drew a %v %v!\n", player.cardsInHand[player.amountInHand-1].color, player.cardsInHand[player.amountInHand-1].name)
 					turnChange()
 					break
 
