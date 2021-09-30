@@ -18,6 +18,8 @@ make install
 ```bash
 make uninstall
 ```
+## Binaries
+Binaries exist if you don't want to compile it yourself
 
 ## Usage
 Write ``uno`` to start a game
