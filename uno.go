@@ -496,13 +496,16 @@ func main() {
 								break
 							case "Plus4":
 								wildcardResponse := ""
-								fmt.Printf("Choose a new color\n> ")
-								fmt.Scanf("%s", wildcardResponse)
-								if wildcardResponse == "Blue" || wildcardResponse == "Red" || wildcardResponse == "Yellow" || wildcardResponse == "Green" {
-									currentCard = handCard{wildcardResponse, currentCard.name}
-								} else {
-									currentCard = handCard{"Red", currentCard.name}
+								for true {
+									fmt.Printf("Choose a new color\n")
+									fmt.Printf("> ")
+									fmt.Scanf("%s", &wildcardResponse)
+									fmt.Printf("")
+									if wildcardResponse == "Green" || wildcardResponse == "Red" || wildcardResponse == "Blue" || wildcardResponse == "Yellow" {
+										break
+									}
 								}
+								currentCard = handCard{wildcardResponse, currentCard.name}
 								if gameDirection == true {
 									for i := 0; i < 4; i++ {
 										drawCard("computer1")
@@ -520,12 +523,14 @@ func main() {
 								break
 							case "Wildcard":
 								wildcardResponse := ""
-								fmt.Printf("Choose a new color\n> ")
-								fmt.Scanf("%s", wildcardResponse)
-								if wildcardResponse == "Blue" || wildcardResponse == "Red" || wildcardResponse == "Yellow" || wildcardResponse == "Green" {
-									currentCard = handCard{wildcardResponse, currentCard.name}
-								} else {
-									currentCard = handCard{"Red", currentCard.name}
+								for true {
+									fmt.Printf("Choose a new color\n")
+									fmt.Printf("> ")
+									fmt.Scanf("%s", &wildcardResponse)
+									fmt.Printf("")
+									if wildcardResponse == "Green" || wildcardResponse == "Red" || wildcardResponse == "Blue" || wildcardResponse == "Yellow" {
+										break
+									}
 								}
 								turnChange()
 								break
